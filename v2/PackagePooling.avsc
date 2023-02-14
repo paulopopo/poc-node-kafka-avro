@@ -1,8 +1,0 @@
-{
-  "type" : "enum",
-  "name" : "PackagePooling",
-  "namespace" : "com.stuart.events.v2",
-  "doc" : "* If a package can be pooled with other packages of the same client, any other client, or not pooled at all.",
-  "symbols" : [ "NONE", "SAME_CLIENT", "ANY_CLIENT", "UNKNOWN" ],
-  "default" : "UNKNOWN"
-}

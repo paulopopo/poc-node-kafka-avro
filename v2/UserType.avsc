@@ -1,7 +1,0 @@
-{
-  "type" : "enum",
-  "name" : "UserType",
-  "namespace" : "com.stuart.events.v2",
-  "doc" : "* Represents the role of a user",
-  "symbols" : [ "Admin", "Driver", "Client" ]
-}

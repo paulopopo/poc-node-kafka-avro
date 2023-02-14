@@ -1,7 +1,0 @@
-{
-  "type" : "record",
-  "name" : "Success",
-  "namespace" : "com.stuart.events.v2",
-  "doc" : "* Used to know if some action was a Success",
-  "fields" : [ ]
-}

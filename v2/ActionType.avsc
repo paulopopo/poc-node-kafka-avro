@@ -1,7 +1,0 @@
-{
-  "type" : "enum",
-  "name" : "ActionType",
-  "namespace" : "com.stuart.events.v2",
-  "doc" : "* The set of different action types that are generating the events",
-  "symbols" : [ "CANCEL_PACKAGE", "CHANGE_PACKAGE_SIZE", "DRIVER_ASSIGNED", "REQUEST_NEW_DRIVER", "RETURN_PACKAGE", "SPLIT_PACKAGE", "STACK_PACKAGES", "TASK_SUCCEEDED", "UNSTACK_PACKAGE" ]
-}

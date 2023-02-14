@@ -1,6 +1,5 @@
 import { Kafka } from 'kafkajs';
-import { SchemaRegistry, readAVSCAsync } from '@kafkajs/confluent-schema-registry';
-import path from 'path';
+import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
 
 const kafka = new Kafka({
   clientId: 'my-app',
@@ -10,7 +9,7 @@ const registry = new SchemaRegistry({ host: 'http://localhost:9090' });
 
 const run = async () => {
   console.log('run');
-  const schema = await readAVSCAsync(path.join(__dirname, '/BusinessEvent.avsc'));
+  //   const schema = await readAVSCAsync(path.join(__dirname, '/BusinessEvent.avsc'));
 
   const consumer = kafka.consumer({ groupId: 'test-group' });
   await consumer.connect();
