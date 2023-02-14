@@ -1,0 +1,8 @@
+{
+  "type" : "enum",
+  "name" : "DriverAssignmentFailedReason",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* The set of possible reasons that driver assignment failed",
+  "symbols" : [ "ASSIGNMENT_INCONSISTENT", "DRIVER_OFFLINE", "DRIVER_UNAVAILABLE", "DRIVER_NOT_CONNECTED_TO_WS", "DRIVER_HAS_ACTIVE_DELIVERIES", "DRIVER_REFUSED", "INVITE_EXPIRED", "DELIVERY_EXPIRED", "DELIVERY_REQUEST_CANCELED", "PACKAGE_CANCELED", "UNKNOWN" ],
+  "default" : "UNKNOWN"
+}

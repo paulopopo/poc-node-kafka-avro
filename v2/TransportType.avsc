@@ -1,0 +1,8 @@
+{
+  "type" : "enum",
+  "name" : "TransportType",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* The set of available Transport Types",
+  "symbols" : [ "WALK", "BIKE", "MOTORBIKE", "CAR", "CARGOBIKE", "VAN", "CARGOBIKEXL", "MOTORBIKEXL", "STEERWAGON", "TRUCK", "UNKNOWN", "TRAILERBIKE", "E_BIKE", "E_MOTORBIKE", "E_CAR", "E_VAN", "E_MOTORBIKEXL", "E_TRUCK" ],
+  "default" : "UNKNOWN"
+}

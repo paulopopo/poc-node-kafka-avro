@@ -1,0 +1,56 @@
+{
+  "type" : "record",
+  "name" : "PackageCanceled",
+  "namespace" : "com.stuart.events.v2",
+  "fields" : [ {
+    "name" : "package_id",
+    "type" : "long"
+  }, {
+    "name" : "reason_key",
+    "type" : [ "null", {
+      "type" : "enum",
+      "namespace" : "com.stuart.reason",
+      "name" : "ReasonKey",
+      "symbols" : [ "ABSENT_CUSTOMER", "ADDRESS_ERROR", "ALCOHOLIC_RESTRICTED_ITEMS", "CASH_ORDER_POS", "CLIENT_REQUEST", "COLD_CHAIN", "COURIER_ISSUE", "COURIER_REQUEST", "CUSTOMER_REFUSED_PACKAGE", "DEDICATED_FLEET", "DEVICE_ISSUE", "DISPATCHER_DELAY", "DRIVER_ACCIDENT", "DUPLICATE_PACKAGE", "END_CUSTOMER_CANCELATION", "END_CUSTOMER_UNDERAGED", "EQUIPMENT_FAILURE", "FORGOTTEN_SIGNATURE", "GEOCODING_ERROR", "INCORRECT_PACKAGE", "LACK_MANDATORY_EQUIPMENT", "LATE_UNRESPONSIVE", "LATE_UNRESPONSIVE_COURIER_REASSIGNED", "LONG_WAIT_AT_PU", "STACKING", "MC_DONALDS", "NO_SUPPLY", "OFF_SLOT", "OPS_H2H_REQUEST", "OTHER", "OTHER_CLIENT_RESPONSIBILITY", "OTHER_DRIVER_RESPONSIBILITY", "PACKAGE_DAMAGED", "PACKAGE_DAMAGED_DRIVER_RESPONSIBILITY", "PACKAGE_NOT_AT_PU", "PACKAGE_RETURNED", "PACKAGE_TIMEOUT", "PROOF_OF_DELIVERY_UNAVAILABLE", "PU_CLOSED", "PU_TOO_FAR", "REFUSED_DELIVERY", "RELAUNCH", "ROAD_CLOSED_UNACCESSIBLE_AREA", "SPECIFIC_COURIER_NEEDED", "TECH_ISSUE", "TECHNICAL_ISSUE", "UNACCESSIBLE_AREA", "UNSAFE_AREA_REPORTED", "UNSAFE_AREA", "WRONG_CAPACITY", "WRONG_PACKAGE_SIZE", "WRONG_TRANSPORT_TYPE", "WRONG_WEIGHT", "END_OF_SLOT" ]
+    } ],
+    "default" : null
+  }, {
+    "name" : "action_type",
+    "type" : [ "null", {
+      "type" : "enum",
+      "name" : "ActionType",
+      "doc" : "* The set of different action types that are generating the events",
+      "symbols" : [ "CANCEL_PACKAGE", "CHANGE_PACKAGE_SIZE", "DRIVER_ASSIGNED", "REQUEST_NEW_DRIVER", "RETURN_PACKAGE", "SPLIT_PACKAGE", "STACK_PACKAGES", "TASK_SUCCEEDED", "UNSTACK_PACKAGE" ]
+    } ],
+    "default" : null
+  } ]
+}
+
+{"package_id": 91919131, "reason_key" : {"com.stuart.events.v2.ReasonKey" : "ABSENT_CUSTOMER" }}
+
+{
+  "package_id": 91919131,
+    "reason_key" : {
+        "com.stuart.events.v2.ReasonKey" : "ABSENT_CUSTOMER"
+      }
+}
+
+{"created_at": 1516961043000,  "msg": { "com.stuart.events.v2.PackageCanceled":  {"package_id": 91919131, "reason_key" : {"com.stuart.events.v2.ReasonKey" : "ABSENT_CUSTOMER" }}}}
+
+
+
+kafka-avro-console-producer --topic packages --bootstrap-server broker:29092 --property value.schema="$(< /opt/app/schema/PackageCanceled.avsc)"
+
+
+kafka-avro-console-producer \
+    --broker-list broker:29092 \
+    --topic packages \
+    --property value.schema='{"type":"record","name":"PackageCanceled","namespace":"com.stuart.events.v2","fields":[{"name":"package_id","type":"long"},{"name":"reason_key","type":["null",{"type":"enum","name":"ReasonKey","symbols":["ABSENT_CUSTOMER","ADDRESS_ERROR"]}],"default":null}]}' \
+    --property parse.key=false \
+    --property key.separator=':'
+
+
+    kafka-avro-console-producer \
+  --broker-list localhost:9092 \
+  --topic test-topic \
+  --property value.schema='{"type":"record","name":"PackageCanceled","namespace":"com.stuart.events.v2","fields":[{"name":"package_id","type":"long"},{"name":"reason_key","type":["null",{"type":"enum","name":"ReasonKey","symbols":["ABSENT_CUSTOMER","ADDRESS_ERROR"]}],"default":null}]}' \

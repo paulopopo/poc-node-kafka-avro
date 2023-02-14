@@ -1,0 +1,28 @@
+{
+  "type" : "record",
+  "name" : "ActorMeta",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* ActorMeta holds information about the user or application that requested the operation\n     * that ended up emitting a BusinessEvent\n     *\n     * In v2 of the api, every action is performed by a user who has a corresponding entry in\n     * the 'users' table on the backend database.\n     *\n     * In v3 of the api, the authentication mechanism is rebuilt to use JWT, and it will allow\n     * an application to use a token which is not linked to any specific user, or linked to\n     * a user that not necessarily has an entry in the users table.\n     * When this happens, the token will contain a uuid and the id of the application being used.\n     *\n     * For a tool consuming the business events to be able to uniquely identify the user\n     * or application that requested an operation, when 'user_type' and 'user_id' are not present,\n     * the tool will need to query the SSO using the 'uuid' attribute to fetch additional\n     * information about the owner of the token that was used to perform the operation.",
+  "fields" : [ {
+    "name" : "user_type",
+    "type" : [ "null", {
+      "type" : "enum",
+      "name" : "UserType",
+      "doc" : "* Represents the role of a user",
+      "symbols" : [ "Admin", "Driver", "Client" ]
+    } ],
+    "default" : null
+  }, {
+    "name" : "user_id",
+    "type" : [ "null", "long" ],
+    "default" : null
+  }, {
+    "name" : "id",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "application_id",
+    "type" : [ "null", "string" ],
+    "default" : null
+  } ]
+}

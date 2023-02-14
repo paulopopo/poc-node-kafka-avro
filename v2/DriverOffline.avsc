@@ -1,0 +1,10 @@
+{
+  "type" : "record",
+  "name" : "DriverOffline",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* DriverOffline represents a driver who no longer wants to work. This event\n     * is closely related with DriverUnavailable. When a driver is working their\n     * last job, they may already be DriverUnavailable but not yet DriverOffline.\n     * A better name for this event might bave been StoppedWorking. When a driver\n     * is set Offline any Available status becomes invalid. Offline should always\n     * be sent with a matching Unavailable to help consumers not have to keep\n     * track of this rule.\n     *\n     * Usually emitted by `stuart-api` in response to incoming API requets from\n     * the DMA and when drivers become idle and are \"cleaned up\". Offline implies\n     * Unavailable.",
+  "fields" : [ {
+    "name" : "driver_id",
+    "type" : "long"
+  } ]
+}

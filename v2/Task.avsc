@@ -1,0 +1,56 @@
+{
+  "type" : "record",
+  "name" : "Task",
+  "namespace" : "com.stuart.events.v2",
+  "fields" : [ {
+    "name" : "task_id",
+    "type" : "long"
+  }, {
+    "name" : "type",
+    "type" : {
+      "type" : "enum",
+      "name" : "TaskType",
+      "doc" : "* The set of available actions for a delivery",
+      "symbols" : [ "PICKUP", "DROPOFF", "UNKNOWN" ],
+      "default" : "UNKNOWN"
+    }
+  }, {
+    "name" : "location",
+    "type" : {
+      "type" : "record",
+      "name" : "Location",
+      "doc" : "* Describes a point in a map",
+      "fields" : [ {
+        "name" : "latitude",
+        "type" : "double"
+      }, {
+        "name" : "longitude",
+        "type" : "double"
+      } ]
+    }
+  }, {
+    "name" : "address",
+    "type" : "string",
+    "default" : ""
+  }, {
+    "name" : "time_window",
+    "type" : {
+      "type" : "record",
+      "name" : "TimeWindow",
+      "doc" : "* Describes a time window closed at the beginning and open at the end \"[from, to[\"",
+      "fields" : [ {
+        "name" : "from",
+        "type" : {
+          "type" : "long",
+          "logicalType" : "timestamp-millis"
+        }
+      }, {
+        "name" : "to",
+        "type" : {
+          "type" : "long",
+          "logicalType" : "timestamp-millis"
+        }
+      } ]
+    }
+  } ]
+}

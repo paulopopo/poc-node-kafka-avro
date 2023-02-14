@@ -1,0 +1,10 @@
+{
+  "type" : "record",
+  "name" : "Failure",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* Used to know if some action was a Failure and the reason of this failure",
+  "fields" : [ {
+    "name" : "reason",
+    "type" : "string"
+  } ]
+}

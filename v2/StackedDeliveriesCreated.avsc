@@ -1,0 +1,107 @@
+{
+  "type" : "record",
+  "name" : "StackedDeliveriesCreated",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* This event is intended to be used to cover the use case of legacy stacked jobs. It is provided as a specific\n\t * event instead of adding more general restriction semantics, because it is going to be deprecated \"soon\", so no\n\t * need to think yet on this restriction semantics to cover a legacy use-case. The list of deliveries will be\n\t * handled by one single driver, and the tasks of those deliveries will be done in tasks_order if provided (null or\n\t * empty array will allow the dispatcher to optimise it by itself).",
+  "fields" : [ {
+    "name" : "deliveries",
+    "type" : {
+      "type" : "array",
+      "items" : {
+        "type" : "record",
+        "name" : "DeliveryCreated",
+        "doc" : "* When a new delivery is created for a package. It contains an initial non-empty list of tasks for this delivery",
+        "fields" : [ {
+          "name" : "delivery_id",
+          "type" : "long"
+        }, {
+          "name" : "package_id",
+          "type" : "long"
+        }, {
+          "name" : "tasks",
+          "type" : {
+            "type" : "array",
+            "items" : {
+              "type" : "record",
+              "name" : "Task",
+              "fields" : [ {
+                "name" : "task_id",
+                "type" : "long"
+              }, {
+                "name" : "type",
+                "type" : {
+                  "type" : "enum",
+                  "name" : "TaskType",
+                  "doc" : "* The set of available actions for a delivery",
+                  "symbols" : [ "PICKUP", "DROPOFF", "UNKNOWN" ],
+                  "default" : "UNKNOWN"
+                }
+              }, {
+                "name" : "location",
+                "type" : {
+                  "type" : "record",
+                  "name" : "Location",
+                  "doc" : "* Describes a point in a map",
+                  "fields" : [ {
+                    "name" : "latitude",
+                    "type" : "double"
+                  }, {
+                    "name" : "longitude",
+                    "type" : "double"
+                  } ]
+                }
+              }, {
+                "name" : "address",
+                "type" : "string",
+                "default" : ""
+              }, {
+                "name" : "time_window",
+                "type" : {
+                  "type" : "record",
+                  "name" : "TimeWindow",
+                  "doc" : "* Describes a time window closed at the beginning and open at the end \"[from, to[\"",
+                  "fields" : [ {
+                    "name" : "from",
+                    "type" : {
+                      "type" : "long",
+                      "logicalType" : "timestamp-millis"
+                    }
+                  }, {
+                    "name" : "to",
+                    "type" : {
+                      "type" : "long",
+                      "logicalType" : "timestamp-millis"
+                    }
+                  } ]
+                }
+              } ]
+            }
+          }
+        }, {
+          "name" : "fleets",
+          "type" : {
+            "type" : "array",
+            "items" : "long"
+          }
+        }, {
+          "name" : "excluded_driver_ids",
+          "type" : {
+            "type" : "array",
+            "items" : "long"
+          }
+        }, {
+          "name" : "auto_stackable",
+          "type" : "boolean",
+          "default" : false
+        } ]
+      }
+    }
+  }, {
+    "name" : "tasks_order",
+    "type" : {
+      "type" : "array",
+      "items" : "long"
+    },
+    "default" : [ ]
+  } ]
+}

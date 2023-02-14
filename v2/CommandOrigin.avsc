@@ -1,0 +1,8 @@
+{
+  "type" : "enum",
+  "name" : "CommandOrigin",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* To know if some action has ocurred by command of the dispatcher or by some manual ops",
+  "symbols" : [ "DISPATCHER", "MANUAL", "BACKEND", "UNKNOWN" ],
+  "default" : "UNKNOWN"
+}

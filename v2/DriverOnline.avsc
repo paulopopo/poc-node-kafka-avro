@@ -1,0 +1,25 @@
+{
+  "type" : "record",
+  "name" : "DriverOnline",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* DriverOnline represents a driver who is \"working\". Opening/connecting to\n     * the application should not emit an online event. A better name for this\n     * event would have been `StartedWorking`. When a driver uses the application\n     * and wants to work, they toggle a control which emits both DriverOnline and\n     * Available.\n     *\n     * Usually emitted by `stuart-api` in response to incoming API requets from\n     * the DMA.",
+  "fields" : [ {
+    "name" : "driver_id",
+    "type" : "long"
+  }, {
+    "name" : "transport_type",
+    "type" : {
+      "type" : "enum",
+      "name" : "TransportType",
+      "doc" : "* The set of available Transport Types",
+      "symbols" : [ "WALK", "BIKE", "MOTORBIKE", "CAR", "CARGOBIKE", "VAN", "CARGOBIKEXL", "MOTORBIKEXL", "STEERWAGON", "TRUCK", "UNKNOWN", "TRAILERBIKE", "E_BIKE", "E_MOTORBIKE", "E_CAR", "E_VAN", "E_MOTORBIKEXL", "E_TRUCK" ],
+      "default" : "UNKNOWN"
+    }
+  }, {
+    "name" : "fleets",
+    "type" : {
+      "type" : "array",
+      "items" : "long"
+    }
+  } ]
+}

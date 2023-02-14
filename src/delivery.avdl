@@ -1,0 +1,78 @@
+@namespace("com.stuart.events.v2")
+protocol Delivery {
+    import idl "common.avdl";
+    import idl "task.avdl";
+
+    /**
+     * When a new delivery is created for a package. It contains an initial non-empty list of tasks for this delivery
+     */
+	record DeliveryCreated {
+		long delivery_id;
+		long package_id;
+		array<Task> tasks;
+		array<long> fleets;
+		array<long> excluded_driver_ids;
+		boolean auto_stackable = false;
+	}
+
+	/**
+	 * When a task is added to an existing delivery. It will always be appended at the end of the current list of tasks
+	 * of the delivery
+	 */
+	record DeliveryTaskAdded {
+		long delivery_id;
+		Task task;
+	}
+
+	/**
+	 * Final status for a delivery to indicate that it has successfuly finished, and no longer tasks will be added into it.
+	 * We can remove it from the system with all its tasks.
+	 */
+	record DeliverySucceeded {
+		long delivery_id;
+	}
+
+	/**
+	 * Final status for a delivery to indicate that it has failed, and no longer tasks will be added into it.
+	 * We can remove it from the system with all its tasks.
+	 */
+	record DeliveryFailed {
+		long delivery_id;
+	}
+
+	/**
+	 * Final status for a delivery to indicate that it has been canceled, and no longer tasks will be added into it.
+	 * We can remove it from the system with all its tasks.
+	 */
+	record DeliveryCanceled {
+		long delivery_id;
+		union { null, ReasonKey } reason_key = null;
+		union { null, ActionType } action_type = null;
+	}
+
+	/**
+	 * This event is intended to be used to cover the use case of legacy stacked jobs. It is provided as a specific
+	 * event instead of adding more general restriction semantics, because it is going to be deprecated "soon", so no
+	 * need to think yet on this restriction semantics to cover a legacy use-case. The list of deliveries will be
+	 * handled by one single driver, and the tasks of those deliveries will be done in tasks_order if provided (null or
+	 * empty array will allow the dispatcher to optimise it by itself).
+	 */
+	record StackedDeliveriesCreated {
+		array<DeliveryCreated> deliveries;
+		array<long> tasks_order = [];
+	}
+
+	/**
+	 * When a new driver is requested for a package.
+	 * The cancelation_reason will deprecated in the future in favour of reason_key, which will
+	 * contain the private reason key instead of the plain text reason.
+	 */
+	record NewDriverRequested {
+		long delivery_id;
+		union {DriverSource, AdminSource, SystemSource} source;
+		string cancelation_reason;
+		union {Success, Failure} result;
+		union { null, ReasonKey } reason_key = null;
+		union { null, ActionType } action_type = null;
+	}
+}

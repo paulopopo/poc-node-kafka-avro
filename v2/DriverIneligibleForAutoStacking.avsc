@@ -1,0 +1,10 @@
+{
+  "type" : "record",
+  "name" : "DriverIneligibleForAutoStacking",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* DriverIneligibleForAutoStacking indicates the current driver no longer wants\n     * to be invited to receive auto-stack deliveries.\n     *\n     * DriverIneligibleForAutoStacking is usually emitted by `stuart-api` in response\n     * to the driver setting to false the extra packages setting in the DMA.",
+  "fields" : [ {
+    "name" : "driver_id",
+    "type" : "long"
+  } ]
+}

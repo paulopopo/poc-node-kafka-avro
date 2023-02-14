@@ -1,0 +1,19 @@
+{
+  "type" : "record",
+  "name" : "TimeWindow",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* Describes a time window closed at the beginning and open at the end \"[from, to[\"",
+  "fields" : [ {
+    "name" : "from",
+    "type" : {
+      "type" : "long",
+      "logicalType" : "timestamp-millis"
+    }
+  }, {
+    "name" : "to",
+    "type" : {
+      "type" : "long",
+      "logicalType" : "timestamp-millis"
+    }
+  } ]
+}

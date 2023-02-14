@@ -1,0 +1,45 @@
+{
+  "type" : "record",
+  "name" : "Restrictions",
+  "namespace" : "com.stuart.events.v2",
+  "fields" : [ {
+    "name" : "requested_transport_types",
+    "type" : {
+      "type" : "array",
+      "items" : {
+        "type" : "enum",
+        "name" : "TransportType",
+        "doc" : "* The set of available Transport Types",
+        "symbols" : [ "WALK", "BIKE", "MOTORBIKE", "CAR", "CARGOBIKE", "VAN", "CARGOBIKEXL", "MOTORBIKEXL", "STEERWAGON", "TRUCK", "UNKNOWN", "TRAILERBIKE", "E_BIKE", "E_MOTORBIKE", "E_CAR", "E_VAN", "E_MOTORBIKEXL", "E_TRUCK" ],
+        "default" : "UNKNOWN"
+      }
+    }
+  }, {
+    "name" : "allowed_transport_types",
+    "type" : {
+      "type" : "array",
+      "items" : "TransportType"
+    }
+  }, {
+    "name" : "pickup_at",
+    "type" : [ "null", {
+      "type" : "long",
+      "logicalType" : "timestamp-millis"
+    } ]
+  }, {
+    "name" : "dropoff_at",
+    "type" : [ "null", {
+      "type" : "long",
+      "logicalType" : "timestamp-millis"
+    } ]
+  }, {
+    "name" : "package_pooling",
+    "type" : {
+      "type" : "enum",
+      "name" : "PackagePooling",
+      "doc" : "* If a package can be pooled with other packages of the same client, any other client, or not pooled at all.",
+      "symbols" : [ "NONE", "SAME_CLIENT", "ANY_CLIENT", "UNKNOWN" ],
+      "default" : "UNKNOWN"
+    }
+  } ]
+}

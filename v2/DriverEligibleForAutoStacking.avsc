@@ -1,0 +1,10 @@
+{
+  "type" : "record",
+  "name" : "DriverEligibleForAutoStacking",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* DriverEligibleForAutoStacking indicates the current driver wants to\n     * be invited to receive auto-stack deliveries.\n     *\n     * DriverEligibleForAutoStacking is usually emitted by `stuart-api` in response\n     * to the driver setting to true the extra packages setting in the DMA.",
+  "fields" : [ {
+    "name" : "driver_id",
+    "type" : "long"
+  } ]
+}

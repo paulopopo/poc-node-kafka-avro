@@ -1,0 +1,703 @@
+{
+  "type" : "record",
+  "name" : "BusinessEvent",
+  "namespace" : "com.stuart.events.v2",
+  "fields" : [ {
+    "name" : "created_at",
+    "type" : {
+      "type" : "long",
+      "logicalType" : "timestamp-millis"
+    }
+  }, {
+    "name" : "actor_meta",
+    "type" : [ "null", {
+      "type" : "record",
+      "name" : "ActorMeta",
+      "doc" : "* ActorMeta holds information about the user or application that requested the operation\n     * that ended up emitting a BusinessEvent\n     *\n     * In v2 of the api, every action is performed by a user who has a corresponding entry in\n     * the 'users' table on the backend database.\n     *\n     * In v3 of the api, the authentication mechanism is rebuilt to use JWT, and it will allow\n     * an application to use a token which is not linked to any specific user, or linked to\n     * a user that not necessarily has an entry in the users table.\n     * When this happens, the token will contain a uuid and the id of the application being used.\n     *\n     * For a tool consuming the business events to be able to uniquely identify the user\n     * or application that requested an operation, when 'user_type' and 'user_id' are not present,\n     * the tool will need to query the SSO using the 'uuid' attribute to fetch additional\n     * information about the owner of the token that was used to perform the operation.",
+      "fields" : [ {
+        "name" : "user_type",
+        "type" : [ "null", {
+          "type" : "enum",
+          "name" : "UserType",
+          "doc" : "* Represents the role of a user",
+          "symbols" : [ "Admin", "Driver", "Client" ]
+        } ],
+        "default" : null
+      }, {
+        "name" : "user_id",
+        "type" : [ "null", "long" ],
+        "default" : null
+      }, {
+        "name" : "id",
+        "type" : [ "null", "string" ],
+        "default" : null
+      }, {
+        "name" : "application_id",
+        "type" : [ "null", "string" ],
+        "default" : null
+      } ]
+    } ],
+    "default" : null
+  }, {
+    "name" : "correlation_id",
+    "type" : [ "null", "string" ],
+    "default" : null
+  }, {
+    "name" : "msg",
+    "type" : [ {
+      "type" : "record",
+      "name" : "DriverOnline",
+      "doc" : "* DriverOnline represents a driver who is \"working\". Opening/connecting to\n     * the application should not emit an online event. A better name for this\n     * event would have been `StartedWorking`. When a driver uses the application\n     * and wants to work, they toggle a control which emits both DriverOnline and\n     * Available.\n     *\n     * Usually emitted by `stuart-api` in response to incoming API requets from\n     * the DMA.",
+      "fields" : [ {
+        "name" : "driver_id",
+        "type" : "long"
+      }, {
+        "name" : "transport_type",
+        "type" : {
+          "type" : "enum",
+          "name" : "TransportType",
+          "doc" : "* The set of available Transport Types",
+          "symbols" : [ "WALK", "BIKE", "MOTORBIKE", "CAR", "CARGOBIKE", "VAN", "CARGOBIKEXL", "MOTORBIKEXL", "STEERWAGON", "TRUCK", "UNKNOWN", "TRAILERBIKE", "E_BIKE", "E_MOTORBIKE", "E_CAR", "E_VAN", "E_MOTORBIKEXL", "E_TRUCK" ],
+          "default" : "UNKNOWN"
+        }
+      }, {
+        "name" : "fleets",
+        "type" : {
+          "type" : "array",
+          "items" : "long"
+        }
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DriverOffline",
+      "doc" : "* DriverOffline represents a driver who no longer wants to work. This event\n     * is closely related with DriverUnavailable. When a driver is working their\n     * last job, they may already be DriverUnavailable but not yet DriverOffline.\n     * A better name for this event might bave been StoppedWorking. When a driver\n     * is set Offline any Available status becomes invalid. Offline should always\n     * be sent with a matching Unavailable to help consumers not have to keep\n     * track of this rule.\n     *\n     * Usually emitted by `stuart-api` in response to incoming API requets from\n     * the DMA and when drivers become idle and are \"cleaned up\". Offline implies\n     * Unavailable.",
+      "fields" : [ {
+        "name" : "driver_id",
+        "type" : "long"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DriverAvailable",
+      "doc" : "* DriverAvailable indicates that a driver is willing to receive invitations.\n     * The system may not consider them invitable but the driver indicates their\n     * willingness to be considered invitable. This may be set Unavaialble once\n     * the driver uses the last-job feature of the DMA to indicate they want no\n     * more invitations after finishing their current assignment. Should really\n     * be called something like DriverOpenForInvites.\n     *\n     * Usually emitted by `stuart-api` in response to incoming API requets from\n     * the DMA. (Drivers starting work go Available and Online in the same instant)",
+      "fields" : [ {
+        "name" : "driver_id",
+        "type" : "long"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DriverUnavailable",
+      "doc" : "* DriverUnavailable indicates the driver no longer wishes to receive\n     * invitations. A driver may still be Online (working) but Unavailable, this\n     * combined state would indicate they are working on their last assignment or\n     * want to opt-out of receiving invitations for potential \"extra\" packages\n     * along their route (perfect ride, pooling). Probably the meaning of this\n     * event will evolve along side optimization topics for driver utilization.\n     *\n     * DriverUninvitable is usually emitted by `stuart-api` in response to the\n     * indicating that they want no more assignments after the current one\n     * finishes, or when the driver goes offline.",
+      "fields" : [ {
+        "name" : "driver_id",
+        "type" : "long"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DriverSocketConnected",
+      "doc" : "* Represents a Driver who is available to receive invitations via a websocket",
+      "fields" : [ {
+        "name" : "driver_id",
+        "type" : "long"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DriverSocketDisconnected",
+      "doc" : "* Represents a Driver who is NOT available to receive invitations via a websocket",
+      "fields" : [ {
+        "name" : "driver_id",
+        "type" : "long"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DriverPositionUpdated",
+      "doc" : "* Represents a new known location with precision for a Driver",
+      "fields" : [ {
+        "name" : "driver_id",
+        "type" : "long"
+      }, {
+        "name" : "position",
+        "type" : {
+          "type" : "record",
+          "name" : "GPSPoint",
+          "doc" : "* Represents a location generated by a positioning GPS device",
+          "fields" : [ {
+            "name" : "location",
+            "type" : {
+              "type" : "record",
+              "name" : "Location",
+              "doc" : "* Describes a point in a map",
+              "fields" : [ {
+                "name" : "latitude",
+                "type" : "double"
+              }, {
+                "name" : "longitude",
+                "type" : "double"
+              } ]
+            }
+          }, {
+            "name" : "precision",
+            "type" : "double"
+          } ]
+        }
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "PackageCreated",
+      "doc" : "* When a package is created in the platform. It does NOT contain the deliveries",
+      "fields" : [ {
+        "name" : "package_id",
+        "type" : "long"
+      }, {
+        "name" : "client_id",
+        "type" : "long"
+      }, {
+        "name" : "type",
+        "type" : {
+          "type" : "enum",
+          "name" : "PackageType",
+          "doc" : "* The set of standarized sizes for packages",
+          "symbols" : [ "SIZE_UNKNOWN", "XSMALL", "SMALL", "MEDIUM", "LARGE", "XLARGE", "XXLARGE" ],
+          "default" : "SIZE_UNKNOWN"
+        }
+      }, {
+        "name" : "restrictions",
+        "type" : {
+          "type" : "record",
+          "name" : "Restrictions",
+          "fields" : [ {
+            "name" : "requested_transport_types",
+            "type" : {
+              "type" : "array",
+              "items" : "TransportType"
+            }
+          }, {
+            "name" : "allowed_transport_types",
+            "type" : {
+              "type" : "array",
+              "items" : "TransportType"
+            }
+          }, {
+            "name" : "pickup_at",
+            "type" : [ "null", {
+              "type" : "long",
+              "logicalType" : "timestamp-millis"
+            } ]
+          }, {
+            "name" : "dropoff_at",
+            "type" : [ "null", {
+              "type" : "long",
+              "logicalType" : "timestamp-millis"
+            } ]
+          }, {
+            "name" : "package_pooling",
+            "type" : {
+              "type" : "enum",
+              "name" : "PackagePooling",
+              "doc" : "* If a package can be pooled with other packages of the same client, any other client, or not pooled at all.",
+              "symbols" : [ "NONE", "SAME_CLIENT", "ANY_CLIENT", "UNKNOWN" ],
+              "default" : "UNKNOWN"
+            }
+          } ]
+        }
+      }, {
+        "name" : "priority",
+        "type" : "int"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "PackageCanceled",
+      "doc" : "* when a package has been canceled (meaning it won’t be delivered, it must be removed from the system)",
+      "fields" : [ {
+        "name" : "package_id",
+        "type" : "long"
+      }, {
+        "name" : "reason_key",
+        "type" : [ "null", {
+          "type" : "enum",
+          "name" : "ReasonKey",
+          "doc" : "* The set of standarized reasons.\n     *\n     * Backwards compatibility makes it impossible to remove existing values in enums,\n     * so the following is a list of reasons that are not in use:\n     *\n     * - WRONG_PACKAGE_SIZE is deprecated in favour of WRONG_CAPACITY\n     * - LATE_UNRESPONSIVE_COURIER_REASSIGNED is deprecated in favour of LATE_UNRESPONSIVE\n     * - OTHER_CLIENT_RESPONSIBILITY and OTHER_DRIVER_RESPONSIBILITY are deprecated in favour of\n     *   OTHER\n     * - PACKAGE_DAMAGED_DRIVER_RESPONSIBILITY is deprecated in favour of PACKAGE_DAMAGED\n     * - WRONG_CAPACITY and WRONG_TRANSPORT_TYPE are deprecated in favour of WRONG_PACKAGE_SIZE",
+          "symbols" : [ "ABSENT_CUSTOMER", "ADDRESS_ERROR", "ALCOHOLIC_RESTRICTED_ITEMS", "CASH_ORDER_POS", "CLIENT_REQUEST", "COLD_CHAIN", "COURIER_ISSUE", "COURIER_REQUEST", "CUSTOMER_REFUSED_PACKAGE", "DEDICATED_FLEET", "DEVICE_ISSUE", "DISPATCHER_DELAY", "DRIVER_ACCIDENT", "DUPLICATE_PACKAGE", "END_CUSTOMER_CANCELATION", "END_CUSTOMER_UNDERAGED", "EQUIPMENT_FAILURE", "FORGOTTEN_SIGNATURE", "GEOCODING_ERROR", "INCORRECT_PACKAGE", "LACK_MANDATORY_EQUIPMENT", "LATE_UNRESPONSIVE", "LATE_UNRESPONSIVE_COURIER_REASSIGNED", "LONG_WAIT_AT_PU", "STACKING", "MC_DONALDS", "NO_SUPPLY", "OFF_SLOT", "OPS_H2H_REQUEST", "OTHER", "OTHER_CLIENT_RESPONSIBILITY", "OTHER_DRIVER_RESPONSIBILITY", "PACKAGE_DAMAGED", "PACKAGE_DAMAGED_DRIVER_RESPONSIBILITY", "PACKAGE_NOT_AT_PU", "PACKAGE_RETURNED", "PACKAGE_TIMEOUT", "PROOF_OF_DELIVERY_UNAVAILABLE", "PU_CLOSED", "PU_TOO_FAR", "REFUSED_DELIVERY", "RELAUNCH", "ROAD_CLOSED_UNACCESSIBLE_AREA", "SPECIFIC_COURIER_NEEDED", "TECH_ISSUE", "TECHNICAL_ISSUE", "UNACCESSIBLE_AREA", "UNSAFE_AREA_REPORTED", "UNSAFE_AREA", "WRONG_CAPACITY", "WRONG_PACKAGE_SIZE", "WRONG_TRANSPORT_TYPE", "WRONG_WEIGHT", "END_OF_SLOT" ]
+        } ],
+        "default" : null
+      }, {
+        "name" : "action_type",
+        "type" : [ "null", {
+          "type" : "enum",
+          "name" : "ActionType",
+          "doc" : "* The set of different action types that are generating the events",
+          "symbols" : [ "CANCEL_PACKAGE", "CHANGE_PACKAGE_SIZE", "DRIVER_ASSIGNED", "REQUEST_NEW_DRIVER", "RETURN_PACKAGE", "SPLIT_PACKAGE", "STACK_PACKAGES", "TASK_SUCCEEDED", "UNSTACK_PACKAGE" ]
+        } ],
+        "default" : null
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "PackageDelivered",
+      "doc" : "* When a package has been successfuly delivered and it can be removed from the system, because no further delivery for him will be issued.",
+      "fields" : [ {
+        "name" : "package_id",
+        "type" : "long"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "PackageTypeChanged",
+      "doc" : "* when a package has had the package type and/or size modified.",
+      "fields" : [ {
+        "name" : "package_id",
+        "type" : "long"
+      }, {
+        "name" : "type",
+        "type" : "PackageType"
+      }, {
+        "name" : "allowed_transport_types",
+        "type" : {
+          "type" : "array",
+          "items" : "TransportType"
+        },
+        "default" : [ ]
+      }, {
+        "name" : "reason_key",
+        "type" : [ "null", "ReasonKey" ],
+        "default" : null
+      }, {
+        "name" : "action_type",
+        "type" : [ "null", "ActionType" ],
+        "default" : null
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DeliveryCreated",
+      "doc" : "* When a new delivery is created for a package. It contains an initial non-empty list of tasks for this delivery",
+      "fields" : [ {
+        "name" : "delivery_id",
+        "type" : "long"
+      }, {
+        "name" : "package_id",
+        "type" : "long"
+      }, {
+        "name" : "tasks",
+        "type" : {
+          "type" : "array",
+          "items" : {
+            "type" : "record",
+            "name" : "Task",
+            "fields" : [ {
+              "name" : "task_id",
+              "type" : "long"
+            }, {
+              "name" : "type",
+              "type" : {
+                "type" : "enum",
+                "name" : "TaskType",
+                "doc" : "* The set of available actions for a delivery",
+                "symbols" : [ "PICKUP", "DROPOFF", "UNKNOWN" ],
+                "default" : "UNKNOWN"
+              }
+            }, {
+              "name" : "location",
+              "type" : "Location"
+            }, {
+              "name" : "address",
+              "type" : "string",
+              "default" : ""
+            }, {
+              "name" : "time_window",
+              "type" : {
+                "type" : "record",
+                "name" : "TimeWindow",
+                "doc" : "* Describes a time window closed at the beginning and open at the end \"[from, to[\"",
+                "fields" : [ {
+                  "name" : "from",
+                  "type" : {
+                    "type" : "long",
+                    "logicalType" : "timestamp-millis"
+                  }
+                }, {
+                  "name" : "to",
+                  "type" : {
+                    "type" : "long",
+                    "logicalType" : "timestamp-millis"
+                  }
+                } ]
+              }
+            } ]
+          }
+        }
+      }, {
+        "name" : "fleets",
+        "type" : {
+          "type" : "array",
+          "items" : "long"
+        }
+      }, {
+        "name" : "excluded_driver_ids",
+        "type" : {
+          "type" : "array",
+          "items" : "long"
+        }
+      }, {
+        "name" : "auto_stackable",
+        "type" : "boolean",
+        "default" : false
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DeliverySucceeded",
+      "doc" : "* Final status for a delivery to indicate that it has successfuly finished, and no longer tasks will be added into it.\n\t * We can remove it from the system with all its tasks.",
+      "fields" : [ {
+        "name" : "delivery_id",
+        "type" : "long"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DeliveryFailed",
+      "doc" : "* Final status for a delivery to indicate that it has failed, and no longer tasks will be added into it.\n\t * We can remove it from the system with all its tasks.",
+      "fields" : [ {
+        "name" : "delivery_id",
+        "type" : "long"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DeliveryCanceled",
+      "doc" : "* Final status for a delivery to indicate that it has been canceled, and no longer tasks will be added into it.\n\t * We can remove it from the system with all its tasks.",
+      "fields" : [ {
+        "name" : "delivery_id",
+        "type" : "long"
+      }, {
+        "name" : "reason_key",
+        "type" : [ "null", "ReasonKey" ],
+        "default" : null
+      }, {
+        "name" : "action_type",
+        "type" : [ "null", "ActionType" ],
+        "default" : null
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "StackedDeliveriesCreated",
+      "doc" : "* This event is intended to be used to cover the use case of legacy stacked jobs. It is provided as a specific\n\t * event instead of adding more general restriction semantics, because it is going to be deprecated \"soon\", so no\n\t * need to think yet on this restriction semantics to cover a legacy use-case. The list of deliveries will be\n\t * handled by one single driver, and the tasks of those deliveries will be done in tasks_order if provided (null or\n\t * empty array will allow the dispatcher to optimise it by itself).",
+      "fields" : [ {
+        "name" : "deliveries",
+        "type" : {
+          "type" : "array",
+          "items" : "DeliveryCreated"
+        }
+      }, {
+        "name" : "tasks_order",
+        "type" : {
+          "type" : "array",
+          "items" : "long"
+        },
+        "default" : [ ]
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "StackingConstraintCreated",
+      "doc" : "* When a stacking constraint has been created.\n\t *\n\t * The list of deliveries will be handled by one single driver,\n\t * and the tasks of those deliveries will be done in tasks_order if provided\n\t * (an empty array means that the order doesn't matter and can be decided by the consumer).",
+      "fields" : [ {
+        "name" : "stacking_constraint_id",
+        "type" : "long"
+      }, {
+        "name" : "delivery_ids",
+        "type" : {
+          "type" : "array",
+          "items" : "long"
+        }
+      }, {
+        "name" : "tasks_order",
+        "type" : {
+          "type" : "array",
+          "items" : "long"
+        },
+        "default" : [ ]
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "StackingConstraintCanceled",
+      "doc" : "* When a stacking constraint has been canceled.",
+      "fields" : [ {
+        "name" : "stacking_constraint_id",
+        "type" : "long"
+      }, {
+        "name" : "delivery_ids",
+        "type" : {
+          "type" : "array",
+          "items" : "long"
+        }
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DeliveryTaskAdded",
+      "doc" : "* When a task is added to an existing delivery. It will always be appended at the end of the current list of tasks\n\t * of the delivery",
+      "fields" : [ {
+        "name" : "delivery_id",
+        "type" : "long"
+      }, {
+        "name" : "task",
+        "type" : "Task"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "NewDriverRequested",
+      "doc" : "* When a new driver is requested for a package.\n\t * The cancelation_reason will deprecated in the future in favour of reason_key, which will\n\t * contain the private reason key instead of the plain text reason.",
+      "fields" : [ {
+        "name" : "delivery_id",
+        "type" : "long"
+      }, {
+        "name" : "source",
+        "type" : [ {
+          "type" : "record",
+          "name" : "DriverSource",
+          "doc" : "* Used to identify the source of an action being a driver",
+          "fields" : [ {
+            "name" : "driver_id",
+            "type" : "long"
+          } ]
+        }, {
+          "type" : "record",
+          "name" : "AdminSource",
+          "doc" : "* Used to identify the source of an action being a admin user",
+          "fields" : [ {
+            "name" : "user_id",
+            "type" : "long"
+          } ]
+        }, {
+          "type" : "record",
+          "name" : "SystemSource",
+          "doc" : "* Used to identify the source of an action being an automated tool",
+          "fields" : [ {
+            "name" : "application_id",
+            "type" : "string"
+          } ]
+        } ]
+      }, {
+        "name" : "cancelation_reason",
+        "type" : "string"
+      }, {
+        "name" : "result",
+        "type" : [ {
+          "type" : "record",
+          "name" : "Success",
+          "doc" : "* Used to know if some action was a Success",
+          "fields" : [ ]
+        }, {
+          "type" : "record",
+          "name" : "Failure",
+          "doc" : "* Used to know if some action was a Failure and the reason of this failure",
+          "fields" : [ {
+            "name" : "reason",
+            "type" : "string"
+          } ]
+        } ]
+      }, {
+        "name" : "reason_key",
+        "type" : [ "null", "ReasonKey" ],
+        "default" : null
+      }, {
+        "name" : "action_type",
+        "type" : [ "null", "ActionType" ],
+        "default" : null
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "TaskSucceeded",
+      "doc" : "* When a task finishes successfully",
+      "fields" : [ {
+        "name" : "task_id",
+        "type" : "long"
+      }, {
+        "name" : "reason_key",
+        "type" : [ "null", "ReasonKey" ],
+        "default" : null
+      }, {
+        "name" : "action_type",
+        "type" : [ "null", "ActionType" ],
+        "default" : null
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "TaskFailed",
+      "doc" : "* When a tasks fails",
+      "fields" : [ {
+        "name" : "task_id",
+        "type" : "long"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DriverAssignmentStarted",
+      "doc" : "* When the backend begins a new driver assignation. Will always be followed by one of the following events.",
+      "fields" : [ {
+        "name" : "assignment_id",
+        "type" : "long"
+      }, {
+        "name" : "driver_id",
+        "type" : "long"
+      }, {
+        "name" : "delivery_ids",
+        "type" : {
+          "type" : "array",
+          "items" : "long"
+        }
+      }, {
+        "name" : "origin",
+        "type" : {
+          "type" : "enum",
+          "name" : "CommandOrigin",
+          "doc" : "* To know if some action has ocurred by command of the dispatcher or by some manual ops",
+          "symbols" : [ "DISPATCHER", "MANUAL", "BACKEND", "UNKNOWN" ],
+          "default" : "UNKNOWN"
+        }
+      }, {
+        "name" : "reason_key",
+        "type" : [ "null", "ReasonKey" ],
+        "default" : null
+      }, {
+        "name" : "action_type",
+        "type" : [ "null", "ActionType" ],
+        "default" : null
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DriverAssignmentSucceeded",
+      "doc" : "* When the assignment is successful, either because the driver accepted an invitation or because an assignment,\n     * it doesn't matter; it's just the succeed of the assignment, it does not relate with inviting or other concepts.",
+      "fields" : [ {
+        "name" : "assignment_id",
+        "type" : "long"
+      }, {
+        "name" : "driver_id",
+        "type" : [ "null", "long" ],
+        "default" : null
+      }, {
+        "name" : "delivery_ids",
+        "type" : {
+          "type" : "array",
+          "items" : "long"
+        },
+        "default" : [ ]
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DriverAssignmentFailed",
+      "doc" : "* When the assignment fails, so it's not successful, and there is no relationship between the driver and the\n     * delivery. An explanation for the failure is included in the reason field.",
+      "fields" : [ {
+        "name" : "assignment_id",
+        "type" : "long"
+      }, {
+        "name" : "reason",
+        "type" : {
+          "type" : "enum",
+          "name" : "DriverAssignmentFailedReason",
+          "doc" : "* The set of possible reasons that driver assignment failed",
+          "symbols" : [ "ASSIGNMENT_INCONSISTENT", "DRIVER_OFFLINE", "DRIVER_UNAVAILABLE", "DRIVER_NOT_CONNECTED_TO_WS", "DRIVER_HAS_ACTIVE_DELIVERIES", "DRIVER_REFUSED", "INVITE_EXPIRED", "DELIVERY_EXPIRED", "DELIVERY_REQUEST_CANCELED", "PACKAGE_CANCELED", "UNKNOWN" ],
+          "default" : "UNKNOWN"
+        },
+        "default" : "UNKNOWN"
+      }, {
+        "name" : "driver_id",
+        "type" : [ "null", "long" ],
+        "default" : null
+      }, {
+        "name" : "delivery_ids",
+        "type" : {
+          "type" : "array",
+          "items" : "long"
+        },
+        "default" : [ ]
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DriverItineraryUpdated",
+      "doc" : "* When the BE updates the itinerary of a driver. Usually because of a DriverItineraryUpdate dispatcher command, \n     * but can also be because a manual assignment of a delivery to a driver or some manual reordering of the waypoints\n     * or tasks in them.",
+      "fields" : [ {
+        "name" : "driver_id",
+        "type" : "long"
+      }, {
+        "name" : "waypoints",
+        "type" : {
+          "type" : "array",
+          "items" : {
+            "type" : "record",
+            "name" : "Waypoint",
+            "doc" : "* Represents an individual waypoint in a driver itinerary",
+            "fields" : [ {
+              "name" : "location",
+              "type" : "Location"
+            }, {
+              "name" : "task_ids",
+              "type" : {
+                "type" : "array",
+                "items" : "long"
+              }
+            }, {
+              "name" : "polyline",
+              "type" : {
+                "type" : "array",
+                "items" : "Location"
+              }
+            }, {
+              "name" : "distance",
+              "type" : "double"
+            }, {
+              "name" : "eta",
+              "type" : {
+                "type" : "long",
+                "logicalType" : "timestamp-millis"
+              }
+            } ]
+          }
+        }
+      }, {
+        "name" : "origin",
+        "type" : "CommandOrigin"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DirectAssignmentRequested",
+      "doc" : "* When a direct assignment is requested by backend",
+      "fields" : [ {
+        "name" : "driver_id",
+        "type" : "long"
+      }, {
+        "name" : "delivery_ids",
+        "type" : {
+          "type" : "array",
+          "items" : "long"
+        }
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "PackageClientReferenceChanged",
+      "doc" : "* when a package reference has been changed",
+      "fields" : [ {
+        "name" : "package_id",
+        "type" : "long"
+      }, {
+        "name" : "client_reference",
+        "type" : "string"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "PackageExpired",
+      "doc" : "* When a package has *expired*. Expiry is a terminal state for a package comparable to canceled. Both PackageCanceled\n     * and PackageExpired may be emitted in any order for expired(, cancelled) packages.",
+      "fields" : [ {
+        "name" : "package_id",
+        "type" : "long"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DriverEligibleForAutoStacking",
+      "doc" : "* DriverEligibleForAutoStacking indicates the current driver wants to\n     * be invited to receive auto-stack deliveries.\n     *\n     * DriverEligibleForAutoStacking is usually emitted by `stuart-api` in response\n     * to the driver setting to true the extra packages setting in the DMA.",
+      "fields" : [ {
+        "name" : "driver_id",
+        "type" : "long"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "DriverIneligibleForAutoStacking",
+      "doc" : "* DriverIneligibleForAutoStacking indicates the current driver no longer wants\n     * to be invited to receive auto-stack deliveries.\n     *\n     * DriverIneligibleForAutoStacking is usually emitted by `stuart-api` in response\n     * to the driver setting to false the extra packages setting in the DMA.",
+      "fields" : [ {
+        "name" : "driver_id",
+        "type" : "long"
+      } ]
+    } ]
+  } ]
+}

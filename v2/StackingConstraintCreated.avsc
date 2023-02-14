@@ -1,0 +1,23 @@
+{
+  "type" : "record",
+  "name" : "StackingConstraintCreated",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* When a stacking constraint has been created.\n\t *\n\t * The list of deliveries will be handled by one single driver,\n\t * and the tasks of those deliveries will be done in tasks_order if provided\n\t * (an empty array means that the order doesn't matter and can be decided by the consumer).",
+  "fields" : [ {
+    "name" : "stacking_constraint_id",
+    "type" : "long"
+  }, {
+    "name" : "delivery_ids",
+    "type" : {
+      "type" : "array",
+      "items" : "long"
+    }
+  }, {
+    "name" : "tasks_order",
+    "type" : {
+      "type" : "array",
+      "items" : "long"
+    },
+    "default" : [ ]
+  } ]
+}

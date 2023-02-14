@@ -1,0 +1,8 @@
+{
+  "type" : "enum",
+  "name" : "PackageType",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* The set of standarized sizes for packages",
+  "symbols" : [ "SIZE_UNKNOWN", "XSMALL", "SMALL", "MEDIUM", "LARGE", "XLARGE", "XXLARGE" ],
+  "default" : "SIZE_UNKNOWN"
+}

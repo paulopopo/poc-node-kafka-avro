@@ -1,0 +1,10 @@
+{
+  "type" : "record",
+  "name" : "TaskFailed",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* When a tasks fails",
+  "fields" : [ {
+    "name" : "task_id",
+    "type" : "long"
+  } ]
+}

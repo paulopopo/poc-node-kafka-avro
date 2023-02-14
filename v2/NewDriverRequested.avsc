@@ -1,0 +1,74 @@
+{
+  "type" : "record",
+  "name" : "NewDriverRequested",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* When a new driver is requested for a package.\n\t * The cancelation_reason will deprecated in the future in favour of reason_key, which will\n\t * contain the private reason key instead of the plain text reason.",
+  "fields" : [ {
+    "name" : "delivery_id",
+    "type" : "long"
+  }, {
+    "name" : "source",
+    "type" : [ {
+      "type" : "record",
+      "name" : "DriverSource",
+      "doc" : "* Used to identify the source of an action being a driver",
+      "fields" : [ {
+        "name" : "driver_id",
+        "type" : "long"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "AdminSource",
+      "doc" : "* Used to identify the source of an action being a admin user",
+      "fields" : [ {
+        "name" : "user_id",
+        "type" : "long"
+      } ]
+    }, {
+      "type" : "record",
+      "name" : "SystemSource",
+      "doc" : "* Used to identify the source of an action being an automated tool",
+      "fields" : [ {
+        "name" : "application_id",
+        "type" : "string"
+      } ]
+    } ]
+  }, {
+    "name" : "cancelation_reason",
+    "type" : "string"
+  }, {
+    "name" : "result",
+    "type" : [ {
+      "type" : "record",
+      "name" : "Success",
+      "doc" : "* Used to know if some action was a Success",
+      "fields" : [ ]
+    }, {
+      "type" : "record",
+      "name" : "Failure",
+      "doc" : "* Used to know if some action was a Failure and the reason of this failure",
+      "fields" : [ {
+        "name" : "reason",
+        "type" : "string"
+      } ]
+    } ]
+  }, {
+    "name" : "reason_key",
+    "type" : [ "null", {
+      "type" : "enum",
+      "name" : "ReasonKey",
+      "doc" : "* The set of standarized reasons.\n     *\n     * Backwards compatibility makes it impossible to remove existing values in enums,\n     * so the following is a list of reasons that are not in use:\n     *\n     * - WRONG_PACKAGE_SIZE is deprecated in favour of WRONG_CAPACITY\n     * - LATE_UNRESPONSIVE_COURIER_REASSIGNED is deprecated in favour of LATE_UNRESPONSIVE\n     * - OTHER_CLIENT_RESPONSIBILITY and OTHER_DRIVER_RESPONSIBILITY are deprecated in favour of\n     *   OTHER\n     * - PACKAGE_DAMAGED_DRIVER_RESPONSIBILITY is deprecated in favour of PACKAGE_DAMAGED\n     * - WRONG_CAPACITY and WRONG_TRANSPORT_TYPE are deprecated in favour of WRONG_PACKAGE_SIZE",
+      "symbols" : [ "ABSENT_CUSTOMER", "ADDRESS_ERROR", "ALCOHOLIC_RESTRICTED_ITEMS", "CASH_ORDER_POS", "CLIENT_REQUEST", "COLD_CHAIN", "COURIER_ISSUE", "COURIER_REQUEST", "CUSTOMER_REFUSED_PACKAGE", "DEDICATED_FLEET", "DEVICE_ISSUE", "DISPATCHER_DELAY", "DRIVER_ACCIDENT", "DUPLICATE_PACKAGE", "END_CUSTOMER_CANCELATION", "END_CUSTOMER_UNDERAGED", "EQUIPMENT_FAILURE", "FORGOTTEN_SIGNATURE", "GEOCODING_ERROR", "INCORRECT_PACKAGE", "LACK_MANDATORY_EQUIPMENT", "LATE_UNRESPONSIVE", "LATE_UNRESPONSIVE_COURIER_REASSIGNED", "LONG_WAIT_AT_PU", "STACKING", "MC_DONALDS", "NO_SUPPLY", "OFF_SLOT", "OPS_H2H_REQUEST", "OTHER", "OTHER_CLIENT_RESPONSIBILITY", "OTHER_DRIVER_RESPONSIBILITY", "PACKAGE_DAMAGED", "PACKAGE_DAMAGED_DRIVER_RESPONSIBILITY", "PACKAGE_NOT_AT_PU", "PACKAGE_RETURNED", "PACKAGE_TIMEOUT", "PROOF_OF_DELIVERY_UNAVAILABLE", "PU_CLOSED", "PU_TOO_FAR", "REFUSED_DELIVERY", "RELAUNCH", "ROAD_CLOSED_UNACCESSIBLE_AREA", "SPECIFIC_COURIER_NEEDED", "TECH_ISSUE", "TECHNICAL_ISSUE", "UNACCESSIBLE_AREA", "UNSAFE_AREA_REPORTED", "UNSAFE_AREA", "WRONG_CAPACITY", "WRONG_PACKAGE_SIZE", "WRONG_TRANSPORT_TYPE", "WRONG_WEIGHT", "END_OF_SLOT" ]
+    } ],
+    "default" : null
+  }, {
+    "name" : "action_type",
+    "type" : [ "null", {
+      "type" : "enum",
+      "name" : "ActionType",
+      "doc" : "* The set of different action types that are generating the events",
+      "symbols" : [ "CANCEL_PACKAGE", "CHANGE_PACKAGE_SIZE", "DRIVER_ASSIGNED", "REQUEST_NEW_DRIVER", "RETURN_PACKAGE", "SPLIT_PACKAGE", "STACK_PACKAGES", "TASK_SUCCEEDED", "UNSTACK_PACKAGE" ]
+    } ],
+    "default" : null
+  } ]
+}

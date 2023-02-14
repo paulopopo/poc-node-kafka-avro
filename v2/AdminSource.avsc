@@ -1,0 +1,10 @@
+{
+  "type" : "record",
+  "name" : "AdminSource",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* Used to identify the source of an action being a admin user",
+  "fields" : [ {
+    "name" : "user_id",
+    "type" : "long"
+  } ]
+}

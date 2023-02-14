@@ -1,0 +1,21 @@
+{
+  "type" : "record",
+  "name" : "DriverAssignmentSucceeded",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* When the assignment is successful, either because the driver accepted an invitation or because an assignment,\n     * it doesn't matter; it's just the succeed of the assignment, it does not relate with inviting or other concepts.",
+  "fields" : [ {
+    "name" : "assignment_id",
+    "type" : "long"
+  }, {
+    "name" : "driver_id",
+    "type" : [ "null", "long" ],
+    "default" : null
+  }, {
+    "name" : "delivery_ids",
+    "type" : {
+      "type" : "array",
+      "items" : "long"
+    },
+    "default" : [ ]
+  } ]
+}

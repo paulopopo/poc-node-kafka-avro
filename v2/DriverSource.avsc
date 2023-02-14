@@ -1,0 +1,10 @@
+{
+  "type" : "record",
+  "name" : "DriverSource",
+  "namespace" : "com.stuart.events.v2",
+  "doc" : "* Used to identify the source of an action being a driver",
+  "fields" : [ {
+    "name" : "driver_id",
+    "type" : "long"
+  } ]
+}

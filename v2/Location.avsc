@@ -1,0 +1,13 @@
+{
+  "type" : "record",
+  "name" : "Location",
+  "namespace" : "com.stuart.commands.v2",
+  "doc" : "* Describes a point in a map",
+  "fields" : [ {
+    "name" : "latitude",
+    "type" : "double"
+  }, {
+    "name" : "longitude",
+    "type" : "double"
+  } ]
+}
